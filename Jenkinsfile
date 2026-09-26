@@ -29,7 +29,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 dir('CRUD-Nodejs-PostgreSQL') {
-                    sh 'docker build -t manhumann/devops-capstone:latest .'
+                    sh 'docker build -t manhumann/nodejs-postgres-app:v1 .'
                 }
             }
         }
@@ -38,7 +38,7 @@ pipeline {
             steps {
                 withCredentials([
                     usernamePassword(
-                        credentialsId: 'dockerhub-credentials',
+                        credentialsId: 'docker-hub-credentials',
                         usernameVariable: 'DOCKER_USERNAME',
                         passwordVariable: 'DOCKER_PASSWORD'
                     )

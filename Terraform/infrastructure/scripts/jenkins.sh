@@ -20,3 +20,38 @@ sudo apt-get update -y
 sudo apt-get install -y jenkins
 
 sudo systemctl enable --now jenkins
+
+#For running node APP
+sudo apt-get install -y nodejs
+
+sudo apt-get install -y npm
+
+#Installing Docker
+sudo apt update
+sudo apt install -y ca-certificates curl
+
+sudo install -m 0755 -d /etc/apt/keyrings
+sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+
+sudo chmod a+r /etc/apt/keyrings/docker.asc
+
+# Add the repository to Apt sources:
+sudo tee /etc/apt/sources.list.d/docker.sources <<EOF
+Types: deb
+URIs: https://download.docker.com/linux/ubuntu
+Suites: $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}")
+Components: stable
+Architectures: $(dpkg --print-architecture)
+Signed-By: /etc/apt/keyrings/docker.asc
+EOF
+
+sudo apt update
+
+sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+echo "Running post install steps..."
+sudo usermod -aG docker ubuntu
+sudo systemctl enable docker.service
+sudo systemctl enable containerd.service
+
+sudo usermod -aG docker jenkins
