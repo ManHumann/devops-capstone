@@ -29,7 +29,8 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 dir('CRUD-Nodejs-PostgreSQL') {
-                    sh 'docker build -t manhumann/nodejs-postgres-app:v1 .'
+                    sh 'docker build -t manhumann/nodejs-postgres-app:${BUILD_NUMBER} .' \
+                    sh 'docker tag manhumann/nodejs-postgres-app:${BUILD_NUMBER} manhumann/nodejs-postgres-app:latest'
                 }
             }
         }
@@ -45,7 +46,8 @@ pipeline {
                 ]) {
                     sh '''
                         echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-                        docker push manhumann/devops-capstone:latest
+                        docker push manhumann/nodejs-postgres-app:latest
+                        docker push manhumann/nodejs-postgres-app:${BUILD_NUMBER}
                     '''
                 }
             }
