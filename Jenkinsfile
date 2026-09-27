@@ -29,7 +29,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 dir('CRUD-Nodejs-PostgreSQL') {
-                    sh 'docker build -t manhumann/nodejs-postgres-app:${BUILD_NUMBER} .' \
+                    sh 'docker build -t manhumann/nodejs-postgres-app:${BUILD_NUMBER} .' 
                     sh 'docker tag manhumann/nodejs-postgres-app:${BUILD_NUMBER} manhumann/nodejs-postgres-app:latest'
                 }
             }
