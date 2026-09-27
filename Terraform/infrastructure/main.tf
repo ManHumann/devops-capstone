@@ -111,6 +111,7 @@ locals {
       {
         compose_file = file("${path.module}/../../CRUD-Nodejs-PostgreSQL/docker-compose.yml")
         jenkins_public_key = tls_private_key.jenkins_deploy.public_key_openssh
+        env_file = file("${path.module}/../../CRUD-Nodejs-PostgreSQL/.env")                           #sending env file to run compose file
       }
       )
       security_groups = [aws_security_group.final_project_sg.id]      #For changing to dedicated later

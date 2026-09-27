@@ -57,4 +57,8 @@ cat > /opt/nodejs-postgres-app/docker-compose.yml <<'EOF'
 ${compose_file}
 EOF
 
+cat > /opt/nodejs-postgres-app/.env <<'EOF'
+${env_file}
+EOF
+
 chown -R ubuntu:ubuntu /opt/nodejs-postgres-app
