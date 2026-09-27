@@ -51,6 +51,18 @@ pipeline {
                     '''
                 }
             }
+
+        stage('Deploy') {
+            steps {
+                sshagent(['jenkins-server-private-key']) {
+                    ssh -o StrictHostKeyChecking=no ubuntu@10.0.1.77 '
+                        cd /opt/nodejs-postgres-app &&
+                        docker compose pull &&
+                        docker compose up -d
+                    '
+                }
+            }
+        }
         }
     }
 }

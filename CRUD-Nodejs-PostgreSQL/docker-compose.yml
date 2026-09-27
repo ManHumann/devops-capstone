@@ -1,6 +1,6 @@
 services:
   app:
-    image: manhumann/nodejs-postgres-app:v1
+    image: manhumann/nodejs-postgres-app:latest
     container_name: nodejs_app
     restart: unless-stopped
     ports:
