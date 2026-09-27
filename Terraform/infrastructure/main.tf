@@ -75,10 +75,15 @@ resource "aws_security_group" "final_project_sg" {
   }
 }
 
-#Creating key_pair
+#Creating key_pair for EC2
 resource "aws_key_pair" "final-project-key" {
   key_name   = "final-project-key"
   public_key = file(".ssh/my-key.pub")
+}
+
+#Creating RSA key pair for jenkins to connect to deployment server
+resource "tls_private_key" "jenkins_deploy" {
+  algorithm = "ED25519"                 #creates public_key_openssh and private_key_openssh
 }
 
 data "aws_ami" "ubuntu" {
@@ -93,24 +98,45 @@ data "aws_ami" "ubuntu" {
 }
 
 locals {
-  instance_user_data = {
-    "Jenkins EC2"   = file("${path.module}/scripts/jenkins.sh")
-    "Deployment EC2" = file("${path.module}/scripts/deployment.sh")
-    "Monitoring EC2" = file("${path.module}/scripts/monitoring.sh")
+  instances = {
+    jenkins = {
+      name = "Jenkins EC2"
+      user_data = file("${path.module}/scripts/jenkins.sh")
+      security_groups = [aws_security_group.final_project_sg.id]      #For changing to dedicated later
+    }
+
+    deployment = {
+      name = "Deployment EC2"
+      user_data = templatefile("${path.module}/scripts/deployment.sh",
+      {
+        compose_file = file("${path.module}/../../CRUD-Nodejs-PostgreSQL/docker-compose.yml")
+        jenkins_public_key = tls_private_key.jenkins_deploy.public_key_openssh
+      }
+      )
+      security_groups = [aws_security_group.final_project_sg.id]      #For changing to dedicated later
+    }
+
+    monitoring = {
+      name = "Monitoring EC2"
+      user_data = file("${path.module}/scripts/monitoring.sh")
+      security_groups = [aws_security_group.final_project_sg.id]      #For changing to dedicated later
+    }
   }
 }
 
 resource "aws_instance" "final_project_instances" {
-  count = length(var.instance_names)
-
-  ami                    = data.aws_ami.ubuntu.id
-  instance_type          = "t3.micro"
-  key_name               = aws_key_pair.final-project-key.key_name
-  vpc_security_group_ids = [aws_security_group.final_project_sg.id]
-  subnet_id              = aws_subnet.public.id
-  user_data              = lookup(local.instance_user_data, var.instance_names[count.index], "")
+  for_each = local.instances
+  ami = data.aws_ami.ubuntu.id
+  
+  instance_type = "t3.micro"
+  key_name = aws_key_pair.final-project-key.key_name
+  vpc_security_group_ids = each.value.security_groups
+  subnet_id = aws_subnet.public.id
+  user_data = each.value.user_data
 
   tags = {
-    Name = var.instance_names[count.index]
+    Name = each.value.name
   }
+
+
 }
