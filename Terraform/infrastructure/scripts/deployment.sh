@@ -109,7 +109,7 @@ positions:
   filename: /tmp/positions.yaml
 
 clients:
-  - url: http://${monitoring_ip}/loki/api/v1/push                                         
+  - url: http://${monitoring_ip}:3100/loki/api/v1/push                                         
 
 scrape_configs:
   - job_name: nginx
