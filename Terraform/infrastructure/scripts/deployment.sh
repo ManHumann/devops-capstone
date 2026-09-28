@@ -36,8 +36,8 @@ sudo apt update
 sudo apt-get install -y nginx
 
 # Enable Nginx at boot and start it
-systemctl enable nginx
-systemctl start nginx
+sudo systemctl enable nginx
+sudo systemctl start nginx
 
 ########################################################################
 #Setting Up public key from jenkins sercver
@@ -69,3 +69,13 @@ mkdir -p /opt/nodejs-postgres-app/db
 cat > /opt/nodejs-postgres-app/db/init.sql <<'EOF'
 ${init_sql_file}
 EOF
+
+#Loading nginx congiguration
+cat > /etc/nginx/sites-available/node-app <<'EOF'
+${nginx_conf}
+EOF
+
+sudo ln -s /etc/nginx/sites-available/node-app /etc/nginx/sites-enabled/node-app
+sudo rm /etc/nginx/sites-enabled/default
+
+sudo systemctl reload nginx

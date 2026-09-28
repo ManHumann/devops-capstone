@@ -49,8 +49,8 @@ resource "aws_security_group" "final_project_sg" {
 
   ingress {
     description = "App UI"
-    from_port   = 8000
-    to_port     = 8000
+    from_port   = 80
+    to_port     = 80
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
@@ -113,6 +113,7 @@ locals {
         jenkins_public_key = tls_private_key.jenkins_deploy.public_key_openssh
         env_file = file("${path.module}/../../CRUD-Nodejs-PostgreSQL/.env")                           #sending env file to run compose file
         init_sql_file = file("${path.module}/../../CRUD-Nodejs-PostgreSQL/db/init.sql")
+        nginx_conf = file("${path.module}/../../node-app.conf")
       }
       )
       security_groups = [aws_security_group.final_project_sg.id]      #For changing to dedicated later
