@@ -55,6 +55,7 @@ sudo systemctl enable docker.service
 sudo systemctl enable containerd.service
 
 sudo usermod -aG docker jenkins
+sudo systemctl restart jenkins
 
 #Installing Promtal
 curl -O -L "https://github.com/grafana/loki/releases/download/v2.4.1/promtail-linux-amd64.zip"

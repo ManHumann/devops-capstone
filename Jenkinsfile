@@ -56,7 +56,7 @@ pipeline {
             steps {
                 sshagent(['jenkins-server-private-key']) {
                     sh '''
-                        ssh -o StrictHostKeyChecking=no ubuntu@10.0.1.77 '
+                        ssh -o StrictHostKeyChecking=no ubuntu@10.0.1.23 '
                             cd /opt/nodejs-postgres-app &&
                             docker compose pull &&
                             docker compose up -d
