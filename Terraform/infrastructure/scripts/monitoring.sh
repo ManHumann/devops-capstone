@@ -13,5 +13,8 @@ sudo apt-get update
 
 # Installs the latest OSS release:
 sudo apt-get install -y grafana
+sudo systemctl start grafana-server
+sudo systemctl enable --now grafana-server
 
 sudo apt-get install -y loki
+

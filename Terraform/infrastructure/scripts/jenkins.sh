@@ -39,7 +39,7 @@ sudo chmod a+r /etc/apt/keyrings/docker.asc
 sudo tee /etc/apt/sources.list.d/docker.sources <<EOF
 Types: deb
 URIs: https://download.docker.com/linux/ubuntu
-Suites: $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}")
+Suites: $(. /etc/os-release && echo "$${UBUNTU_CODENAME:-$VERSION_CODENAME}")
 Components: stable
 Architectures: $(dpkg --print-architecture)
 Signed-By: /etc/apt/keyrings/docker.asc
@@ -55,3 +55,60 @@ sudo systemctl enable docker.service
 sudo systemctl enable containerd.service
 
 sudo usermod -aG docker jenkins
+
+#Installing Promtal
+curl -O -L "https://github.com/grafana/loki/releases/download/v2.4.1/promtail-linux-amd64.zip"
+
+sudo apt install -y unzip
+
+unzip "promtail-linux-amd64.zip"
+chmod a+x "promtail-linux-amd64"
+
+sudo cp promtail-linux-amd64 /usr/local/bin/promtail
+
+#prepare /etc/promptail/config.yml file here
+sudo usermod -aG jenkins promtail
+
+sudo mkdir -p /etc/promtail /etc/promtail/logs
+
+cat > /etc/promtail/promtail-config.yaml << 'EOF'
+server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+
+positions:
+  filename: /var/log/positions.yaml
+
+clients:
+  - url: http://${monitoring_ip}:3100/loki/api/v1/push
+
+scrape_configs:
+  - job_name: jenkins
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: jenkins
+          host: jenkins-ec2
+          env: production
+          __path__: /var/log/jenkins/jenkins.log
+EOF
+
+
+sudo cat > /etc/systemd/system/promtail.service << 'EOF'
+[Unit]
+Description=Promtail service
+After=network.target
+
+[Service]
+Type=simple
+User=root
+ExecStart=/usr/local/bin/promtail -config.file /etc/promtail/promtail-config.yaml
+Restart=on-failure
+RestartSec=20
+StandardOutput=append:/etc/promtail/logs/promtail.log
+StandardError=append:/etc/promtail/logs/promtail.log
+
+[Install]
+WantedBy=multi-user.target
+EOF

@@ -79,3 +79,69 @@ sudo ln -s /etc/nginx/sites-available/node-app /etc/nginx/sites-enabled/node-app
 sudo rm /etc/nginx/sites-enabled/default
 
 sudo systemctl reload nginx
+
+##############################################################################
+#Installing Promtal
+curl -O -L "https://github.com/grafana/loki/releases/download/v2.4.1/promtail-linux-amd64.zip"
+
+sudo apt install -y unzip
+
+unzip "promtail-linux-amd64.zip"
+chmod a+x "promtail-linux-amd64"
+
+sudo cp promtail-linux-amd64 /usr/local/bin/promtail
+
+
+#prepare /etc/promptail/config.yml file here
+
+sudo mkdir -p /etc/promtail /etc/promtail/logs
+
+#####################################################################
+#promptail yml configuraton
+
+#Private IP of monitoring server
+cat > /etc/promtail/promtail-config.yaml << 'EOF'
+server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+
+positions:
+  filename: /tmp/positions.yaml
+
+clients:
+  - url: http://${monitoring_ip}/loki/api/v1/push                                         
+
+scrape_configs:
+  - job_name: nginx
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: nginx
+          __path__: /var/log/nginx/*log
+EOF
+
+
+sudo cat > /etc/systemd/system/promtail.service << 'EOF'
+[Unit]
+Description=Promtail service
+After=network.target
+
+[Service]
+Type=simple
+User=root
+ExecStart=/usr/local/bin/promtail -config.file /etc/promtail/promtail-config.yaml
+Restart=on-failure
+RestartSec=20
+StandardOutput=append:/etc/promtail/logs/promtail.log
+StandardError=append:/etc/promtail/logs/promtail.log
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+sudo systemctl daemon-reload
+sudo systemctl start promtail
+sudo systemctl status promtail
+
+sudo systemctl enable promtail.service

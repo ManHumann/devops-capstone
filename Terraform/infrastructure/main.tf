@@ -54,6 +54,22 @@ resource "aws_security_group" "final_project_sg" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
+
+  ingress {
+    description = "Promtail Port"
+    from_port   = 3100
+    to_port     = 3100
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    description = "Grafana Port"
+    from_port   = 3000
+    to_port     = 3000
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
   
   ingress {
     description = "Jenkins UI"
@@ -98,10 +114,17 @@ data "aws_ami" "ubuntu" {
 }
 
 locals {
+
+  monitoring_ip = cidrhost(aws_subnet.public.cidr_block, 10)   # 10.0.1.10
+
   instances = {
     jenkins = {
       name = "Jenkins EC2"
-      user_data = file("${path.module}/scripts/jenkins.sh")
+      user_data = templatefile("${path.module}/scripts/jenkins.sh",
+      {
+        monitoring_ip = local.monitoring_ip
+      }
+      )
       security_groups = [aws_security_group.final_project_sg.id]      #For changing to dedicated later
     }
 
@@ -114,6 +137,7 @@ locals {
         env_file = file("${path.module}/../../CRUD-Nodejs-PostgreSQL/.env")                           #sending env file to run compose file
         init_sql_file = file("${path.module}/../../CRUD-Nodejs-PostgreSQL/db/init.sql")
         nginx_conf = file("${path.module}/../../node-app.conf")
+        monitoring_ip = local.monitoring_ip
       }
       )
       security_groups = [aws_security_group.final_project_sg.id]      #For changing to dedicated later
@@ -136,6 +160,9 @@ resource "aws_instance" "final_project_instances" {
   vpc_security_group_ids = each.value.security_groups
   subnet_id = aws_subnet.public.id
   user_data = each.value.user_data
+
+  # Only monitoring gets a pinned IP; the others get one from DHCP
+  private_ip = each.key == "monitoring" ? local.monitoring_ip : null
 
   tags = {
     Name = each.value.name
