@@ -62,3 +62,10 @@ ${env_file}
 EOF
 
 chown -R ubuntu:ubuntu /opt/nodejs-postgres-app
+
+mkdir -p /opt/nodejs-postgres-app/db
+
+#Loading the database initialization file required in docker compose
+cat > /opt/nodejs-postgres-app/db/init.sql <<'EOF'
+${init_sql_file}
+EOF
