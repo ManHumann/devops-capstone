@@ -78,21 +78,26 @@ server:
   grpc_listen_port: 0
 
 positions:
-  filename: /var/log/positions.yaml
+  filename: /var/lib/promtail/positions.yaml
 
 clients:
   - url: http://${monitoring_ip}:3100/loki/api/v1/push
 
 scrape_configs:
-  - job_name: jenkins
-    static_configs:
-      - targets:
-          - localhost
-        labels:
-          job: jenkins
-          host: jenkins-ec2
-          env: production
-          __path__: /var/log/jenkins/jenkins.log
+  - job_name: jenkins-journal
+    journal:
+      max_age: 12h
+      path: /var/log/journal
+      labels:
+        job: jenkins
+        host: jenkins-ec2
+        env: production
+    relabel_configs:
+      - source_labels: ['__journal__systemd_unit']
+        regex: 'jenkins.service'
+        action: keep
+      - source_labels: ['__journal__systemd_unit']
+        target_label: unit
 EOF
 
 
