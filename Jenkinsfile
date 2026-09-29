@@ -52,8 +52,7 @@ pipeline {
                 }
             }
         }
-
-        # jenkins static_private id set in terraform code
+        
         stage('Deploy') {
             steps {
                  
