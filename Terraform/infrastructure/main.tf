@@ -169,6 +169,9 @@ resource "aws_instance" "final_project_instances" {
   null
   )
   
+  root_block_device {
+    volume_size = 20
+  }
 
   tags = {
     Name = each.value.name
