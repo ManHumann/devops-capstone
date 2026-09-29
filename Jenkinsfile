@@ -52,9 +52,11 @@ pipeline {
                 }
             }
         }
+
+        # jenkins static_private id set in terraform code
         stage('Deploy') {
             steps {
-                #10.0.1.8 is jenkins static_private id set in terraform code 
+                 
                 sshagent(['jenkins-server-private-key']) {
                     sh '''
                         ssh -o StrictHostKeyChecking=no ubuntu@10.0.1.8 '               
