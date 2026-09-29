@@ -68,7 +68,6 @@ chmod a+x "promtail-linux-amd64"
 sudo cp promtail-linux-amd64 /usr/local/bin/promtail
 
 #prepare /etc/promptail/config.yml file here
-sudo usermod -aG jenkins promtail
 
 sudo mkdir -p /etc/promtail /etc/promtail/logs
 
@@ -118,3 +117,5 @@ StandardError=append:/etc/promtail/logs/promtail.log
 [Install]
 WantedBy=multi-user.target
 EOF
+
+sudo systemctl restart promtail

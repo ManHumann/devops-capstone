@@ -116,6 +116,7 @@ data "aws_ami" "ubuntu" {
 locals {
 
   monitoring_ip = cidrhost(aws_subnet.public.cidr_block, 10)   # 10.0.1.10
+  static_jenkins_ip = cidrhost(aws_subnet.public.cidr_block, 8)   # 10.0.1.8
 
   instances = {
     jenkins = {
@@ -162,7 +163,12 @@ resource "aws_instance" "final_project_instances" {
   user_data = each.value.user_data
 
   # Only monitoring gets a pinned IP; the others get one from DHCP
-  private_ip = each.key == "monitoring" ? local.monitoring_ip : null
+  private_ip = (
+  each.key == "monitoring" ? local.monitoring_ip :
+  each.key == "jenkins"    ? local.static_jenkins_ip :
+  null
+  )
+  
 
   tags = {
     Name = each.value.name
