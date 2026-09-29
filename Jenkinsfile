@@ -54,9 +54,10 @@ pipeline {
         }
         stage('Deploy') {
             steps {
+                #10.0.1.8 is jenkins static_private id set in terraform code 
                 sshagent(['jenkins-server-private-key']) {
                     sh '''
-                        ssh -o StrictHostKeyChecking=no ubuntu@10.0.1.23 '
+                        ssh -o StrictHostKeyChecking=no ubuntu@10.0.1.8 '               
                             cd /opt/nodejs-postgres-app &&
                             docker compose pull &&
                             docker compose up -d
