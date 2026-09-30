@@ -19,7 +19,7 @@ A simple	web	application	from	source	code	to	a	live deployment	on	AWS	—	provis
 
 - Promtail exporting data for monitoring enstance to log.
 
-- All referencing are done using private ip address as much as possible within the code.
+- Internal server-to-server communication uses private VPC networking and security-group relationships where appropriate.
 
 ## Running the project 
 - After copying the repo setup database credentials in .env file `/CRUD-Nodejs-PostgreSQL` run :
@@ -37,7 +37,9 @@ A simple	web	application	from	source	code	to	a	live deployment	on	AWS	—	provis
 ```bash
   terraform apply
 ```
-This creates the state lock using S3 bucket object and dynamodb
+This creates 
+- S3 → stores Terraform state
+- DynamoDB → provides state locking
 
 - After initializing the state , move to infrastructure directory to boot up the instances or simpily `cd ../infrastructure` then in directory /`Terraform/infrastructure` run
 ```bash
@@ -68,5 +70,33 @@ This creates the state lock using S3 bucket object and dynamodb
 
 The demo of the project on how to start is presented in this youtube video
 
+## Security
+
+Security groups are separated by EC2 role:
+
+- Jenkins SG
+- Deployment SG
+- Monitoring SG
+
+Only the required ports are exposed between the servers.
+
+Server-to-server communication uses private VPC addresses/security-group relationships where possible rather than exposing internal services to the public Internet.
+
+Examples include:
+
+- Jenkins → Deployment: SSH
+- Jenkins → Loki: TCP 3100
+- Deployment → Loki: TCP 3100
+- Internet → Deployment: HTTP
+- Administration → Jenkins: SSH/Jenkins UI
+- Administration → Monitoring: SSH/Grafana
+
+The deployment server's application is exposed through Nginx rather than exposing the application container port directly.
 
 
+
+
+
+## License
+
+[MIT](https://choosealicense.com/licenses/mit/)
