@@ -6,7 +6,7 @@ terraform {
     }
 
     tls = {
-      source = "hashicorp/tls"
+      source  = "hashicorp/tls"
       version = "~> 4.0"
     }
   }
@@ -14,12 +14,12 @@ terraform {
 
 
   backend "s3" {
-    bucket = "manhumann-tf-bucket-state"
-    key = "infrastructure/terraform.tfstate"
-    region = "ap-south-1"
-    profile = "isak"
+    bucket         = "manhumann-tf-bucket-state"
+    key            = "infrastructure/terraform.tfstate"
+    region         = "ap-south-1"
+    profile        = "isak"
     dynamodb_table = "my-dynamodb-table"
-    encrypt = true
+    encrypt        = true
   }
 
 }
