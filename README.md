@@ -7,7 +7,7 @@ A simple	web	application	from	source	code	to	a	live deployment	on	AWS	—	provis
 
 ## Brief explanation of the approach taken
 
-- A CRUD nodejs + postgress app taken from the repo https://github.com/mahirsust/nodejs-crud-app-backend
+- A CRUD nodejs + postgress app taken from the repo https://github.com/mehreentahir16/CRUD-Nodejs-PostgreSQL.git
 
 - Configured docker compose with init.sql and volumes for consistency with health checks.
 
@@ -93,7 +93,53 @@ Examples include:
 
 The deployment server's application is exposed through Nginx rather than exposing the application container port directly.
 
+## Problems I faced during the entire project and what I did to overcome them
 
+1. Shift Database credentials 
+Initially the database accepted hard coded values for database
+```bash
+  const { Client } = require('pg');
+var connectionString = "postgres://[username]:[password]@localhost:5432/[database name]";
+
+const client = new Client({
+    connectionString: connectionString
+});
+```
+
+which got changed to `.env.DATABASEURL` to allow easy integration of environment variables
+
+```bash
+  const client = new Client({
+    connectionString: process.env.DATABASE_URL
+});
+```
+2. The app assumed the database already came equipped with required table and columns , for that one needed to log into database and create required fields .
+
+That is handled bu `init.sql` which is mounted in the docker-compose file to set up required fields when the compose is setup first time along with a volume mount to keep the data persistent .
+
+3. Initializing instances from terraform required 3 different instances along with their respective scripting files to downloaded their required services , initial approach of having count and 1 user data to load files proved ineffective 
+
+That was solved by using for_each loop and locals variable with templatefile to load multiple file with their respective scripts.
+
+4. Due to EC2 free service and no using Elastic IP , frequent change of public IP address caused problem to always frequently change the ip within the source code multiple times.
+
+That was solved using priivate static ip which can be set free of cost to talk to each other within the same VPC for deployment and monitoring server.
+
+5. Though nginx logs were easily accessible , jenkins logs were not . Jenkins logs are scrapped off from journalctl
+
+6. During early testing , jenkins server used to crash when reaching deployment stage , become unresponsive , slow logging in from SSH , upon inspection it was found. 
+
+Terraform default initialization only allocated 8GB to volumes ,hence jenkins logs gave "out of storage" error , for that all the instances were assigned 20G of memory.
+
+```bash
+  root_block_device {
+    volume_size = 20
+  }
+```
+
+7. Jenkins server still showed signs of freezing ,unresponsiveness during the first triggre push 
+
+For the issue , command to allocate 2GB of swap memory within the jenkins server in `jenkins.sh` and a reboot after setup , which will cause a slight delay in server initilization. 
 
 
 
