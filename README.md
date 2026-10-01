@@ -151,7 +151,23 @@ Terraform default initialization only allocated 8GB to volumes ,hence jenkins lo
 
 For the issue , command to allocate 2GB of swap memory within the jenkins server in `jenkins.sh` and a reboot after setup , which will cause a slight delay in server initilization. 
 
+## Screenshots
 
+### Infrastructure Architecture
+
+![Infrastructure Diagram](images/terraform_architecture.png)
+
+### Pipeline Architecture
+
+![Pipeline Diagram](images/architecture_diagram.png)
+
+### Pipeline Execution
+
+![Jenkins Screenshot](https://dummyimage.com/468x300?text=App+Screenshot+Here)
+
+### Monitoring Logs
+
+![Monitoring Screenshots](https://dummyimage.com/468x300?text=App+Screenshot+Here)
 
 ## License
 
