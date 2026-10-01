@@ -47,7 +47,7 @@ module "jenkins_security_group" {
       from_port   = 22
       to_port     = 22
       ip_protocol = "tcp"
-      cidr_ipv4   = "0.0.0.0/0"
+      cidr_ipv4   = "13.233.177.0/29"
     }
 
     jenkins_ui = {
@@ -115,7 +115,7 @@ module "deployment_security_group" {
     from_port   = 22
     to_port     = 22
     ip_protocol = "tcp"
-    cidr_ipv4   = "0.0.0.0/0"
+    cidr_ipv4   = "13.233.177.0/29"
   }
   }
   egress_rules = {
@@ -149,7 +149,7 @@ module "monitoring_security_group" {
       from_port   = 22
       to_port     = 22
       ip_protocol = "tcp"
-      cidr_ipv4   = "0.0.0.0/0"
+      cidr_ipv4   = "13.233.177.0/29"
     }
     grafana_ui = {
       description = "Accessing Grafana UI"
