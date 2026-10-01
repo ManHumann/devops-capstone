@@ -88,7 +88,7 @@ The deployment server's application is exposed through Nginx rather than exposin
 
 | Server             | Direction | Port   | Protocol | Allowed Source / Destination | Purpose |
 | ------------------ | --------- | ------ | -------- | ---------------------------- | ------- |
-| **Jenkins EC2**    | Inbound   | `22`   | TCP      | Internet                     | SSH administration |
+| **Jenkins EC2**    | Inbound   | `22`   | TCP      | ap-south-1 region            | SSH administration |
 | **Jenkins EC2**    | Inbound   | `8080` | TCP      | Internet                     | Jenkins Web UI & GitHub Webhook |
 | **Jenkins EC2**    | Outbound  | `22`   | TCP      | Deployment EC2               | SSH-based deployment |
 | **Jenkins EC2**    | Outbound  | `3100` | TCP      | Monitoring EC2               | Send logs to Loki |
@@ -97,7 +97,7 @@ The deployment server's application is exposed through Nginx rather than exposin
 | **Deployment EC2** | Inbound   | `80`   | TCP      | Internet                     | Public application access through Nginx |
 | **Deployment EC2** | Outbound  | `3100` | TCP      | Monitoring EC2               | Send logs to Loki |
 | **Deployment EC2** | Outbound  | All    | All      | Internet                     | Docker image pulls, package downloads, etc. |
-| **Monitoring EC2** | Inbound   | `22`   | TCP      | Internet                     | SSH administration |
+| **Monitoring EC2** | Inbound   | `22`   | TCP      | ap-south-1 region            | SSH administration |
 | **Monitoring EC2** | Inbound   | `3000` | TCP      | Internet                     | Grafana Web UI |
 | **Monitoring EC2** | Inbound   | `3100` | TCP      | **Deployment SG**            | Deployment → Loki |
 | **Monitoring EC2** | Inbound   | `3100` | TCP      | **Jenkins SG**               | Jenkins → Loki |
