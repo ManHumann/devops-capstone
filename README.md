@@ -163,11 +163,11 @@ For the issue , command to allocate 2GB of swap memory within the jenkins server
 
 ### Pipeline Execution
 
-![Jenkins Screenshot](https://dummyimage.com/468x300?text=App+Screenshot+Here)
+![Jenkins Screenshot](images/jenkins_pipeline.png)
 
 ### Monitoring Logs
 
-![Monitoring Screenshots](https://dummyimage.com/468x300?text=App+Screenshot+Here)
+![Monitoring Screenshots](images/monitoring.png)
 
 ## License
 
