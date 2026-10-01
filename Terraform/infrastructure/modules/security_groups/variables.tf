@@ -18,8 +18,8 @@ variable "ingress_rules" {
 
   type = map(object({
     description                  = string
-    from_port                    = number
-    to_port                      = number
+    from_port                    = optional(number)
+    to_port                      = optional(number)
     ip_protocol                  = string
     cidr_ipv4                    = optional(string)
     referenced_security_group_id = optional(string)
@@ -34,8 +34,8 @@ variable "egress_rules" {
 
   type = map(object({
     description = string
-    from_port   = number
-    to_port     = number
+    from_port   = optional(number)
+    to_port     = optional(number)
     ip_protocol = string
     cidr_ipv4   = optional(string)
   }))
