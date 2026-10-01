@@ -119,3 +119,13 @@ WantedBy=multi-user.target
 EOF
 
 sudo systemctl restart promtail
+
+#Adding 2G swap memory to prevent freezing during deployment phase in pipeline
+
+sudo fallocate -l 2G /swapfile
+sudo chmod 600 /swapfile 
+sudo mkswap /swapfile     
+sudo swapon /swapfile   
+echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab   
+
+sudo reboot
