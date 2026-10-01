@@ -78,8 +78,6 @@ module "jenkins_security_group" {
 
     internet = {
       description = "internet access"
-      from_port   = 22
-      to_port     = 22
       ip_protocol = "-1"
       cidr_ipv4   = "0.0.0.0/0" #Internet access
     }
@@ -103,6 +101,7 @@ module "deployment_security_group" {
       ip_protocol                  = "tcp"
       referenced_security_group_id = module.jenkins_security_group.security_group_id
     }
+
     app_ui = {
       description = "Exposing nginX port to internet"
       from_port   = 80
@@ -110,6 +109,14 @@ module "deployment_security_group" {
       ip_protocol = "tcp"
       cidr_ipv4   = "0.0.0.0/0"
     }
+    
+    admin_ssh = {
+    description = "SSH from administrator workstation"
+    from_port   = 22
+    to_port     = 22
+    ip_protocol = "tcp"
+    cidr_ipv4   = "0.0.0.0/0"
+  }
   }
   egress_rules = {
     promtail = {
@@ -122,8 +129,6 @@ module "deployment_security_group" {
 
     internet = {
       description = "internet access"
-      from_port   = 0
-      to_port     = 0
       ip_protocol = "-1"
       cidr_ipv4   = "0.0.0.0/0" #Internet access
     }
@@ -175,8 +180,6 @@ module "monitoring_security_group" {
   egress_rules = {
     internet = {
       description = "internet access"
-      from_port   = 0
-      to_port     = 0
       ip_protocol = "-1"
       cidr_ipv4   = "0.0.0.0/0" #Internet access
     }

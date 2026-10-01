@@ -145,3 +145,6 @@ sudo systemctl start promtail
 sudo systemctl status promtail
 
 sudo systemctl enable promtail.service
+
+#####################################################################
+#Setting up Encryption using Let's Encrypt
