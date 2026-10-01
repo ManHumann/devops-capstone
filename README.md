@@ -82,16 +82,26 @@ Only the required ports are exposed between the servers.
 
 Server-to-server communication uses private VPC addresses/security-group relationships where possible rather than exposing internal services to the public Internet.
 
-Examples include:
-
-- Jenkins → Deployment: SSH
-- Jenkins → Loki: TCP 3100
-- Deployment → Loki: TCP 3100
-- Internet → Deployment: HTTP
-- Administration → Jenkins: SSH/Jenkins UI
-- Administration → Monitoring: SSH/Grafana
-
 The deployment server's application is exposed through Nginx rather than exposing the application container port directly.
+
+### Security Group Architecture
+
+| Server             | Direction | Port   | Protocol | Allowed Source / Destination | Purpose |
+| ------------------ | --------- | ------ | -------- | ---------------------------- | ------- |
+| **Jenkins EC2**    | Inbound   | `22`   | TCP      | Internet                     | SSH administration |
+| **Jenkins EC2**    | Inbound   | `8080` | TCP      | Internet                     | Jenkins Web UI & GitHub Webhook |
+| **Jenkins EC2**    | Outbound  | `22`   | TCP      | Deployment EC2               | SSH-based deployment |
+| **Jenkins EC2**    | Outbound  | `3100` | TCP      | Monitoring EC2               | Send logs to Loki |
+| **Jenkins EC2**    | Outbound  | All    | All      | Internet                     | Package downloads, GitHub, Docker Hub, etc. |
+| **Deployment EC2** | Inbound   | `22`   | TCP      | **Jenkins SG**               | Jenkins → Deployment SSH |
+| **Deployment EC2** | Inbound   | `80`   | TCP      | Internet                     | Public application access through Nginx |
+| **Deployment EC2** | Outbound  | `3100` | TCP      | Monitoring EC2               | Send logs to Loki |
+| **Deployment EC2** | Outbound  | All    | All      | Internet                     | Docker image pulls, package downloads, etc. |
+| **Monitoring EC2** | Inbound   | `22`   | TCP      | Internet                     | SSH administration |
+| **Monitoring EC2** | Inbound   | `3000` | TCP      | Internet                     | Grafana Web UI |
+| **Monitoring EC2** | Inbound   | `3100` | TCP      | **Deployment SG**            | Deployment → Loki |
+| **Monitoring EC2** | Inbound   | `3100` | TCP      | **Jenkins SG**               | Jenkins → Loki |
+| **Monitoring EC2** | Outbound  | All    | All      | Internet                     | System/package access |
 
 ## Problems I faced during the entire project and what I did to overcome them
 
