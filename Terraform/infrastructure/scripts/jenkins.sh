@@ -129,3 +129,5 @@ sudo swapon /swapfile
 echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab   
 
 sudo reboot
+
+sudo systemctl start promtail
