@@ -1,5 +1,5 @@
 
-# Project Title
+## DevOPS CI/CD setup 
 
 A complete CI/CD pipeline from code to deploying it in a EC2 server
 
@@ -68,7 +68,7 @@ This creates
 
 ## Demo
 
-The demo of the project on how to start is presented in this youtube video
+The demo of the project on how to start is presented in this youtube video https://youtu.be/vd7VrdNTllU
 
 ## Security
 
